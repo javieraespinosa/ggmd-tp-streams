@@ -4,8 +4,14 @@
  ### Build image
 
 ```sh
+# Apple Silicon version
+docker build --build-arg ARCH=arm64 -t jaeo/ggmd:tp-stream .
+
+# Codespaces version
 docker build -t jaeo/ggmd:tp-stream .
 ```
+
+
 ### Local Cluster Test
 
 #### Terminal 1
