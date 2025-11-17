@@ -1,0 +1,65 @@
+services:
+
+  client:
+    image: jaeo/ggmd:tp-stream
+    container_name: storm-client
+    command: tail -f /dev/null
+    depends_on:
+      - nimbus
+      - zookeeper    
+    volumes:
+      - ./StormRacer:/storm/examples/StormRacer
+      - ./StreamRunners4docker:/StreamRunners
+      - ./storm.yaml:/opt/apache-storm-2.8.3/conf/storm.yaml 
+
+
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+
+
+  nimbus:
+    image: jaeo/ggmd:tp-stream
+    container_name: nimbus
+    command: storm nimbus
+    depends_on:
+      - zookeeper
+    volumes:
+      - ./storm.yaml:/opt/apache-storm-2.8.3/conf/storm.yaml 
+
+
+  supervisor:
+    image: jaeo/ggmd:tp-stream
+    container_name: supervisor
+    command: storm supervisor
+    depends_on:
+      - nimbus
+      - zookeeper
+    volumes:
+      - ./storm.yaml:/opt/apache-storm-2.8.3/conf/storm.yaml     
+
+
+  ui:
+    image: jaeo/ggmd:tp-stream
+    container_name: storm-ui
+    command: storm ui
+    depends_on:
+      - nimbus
+      - zookeeper
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./storm.yaml:/opt/apache-storm-2.8.3/conf/storm.yaml     
+
+
+  logviewer:
+    image: jaeo/ggmd:tp-stream
+    container_name: logviewer
+    command: storm logviewer
+    depends_on:
+      - nimbus
+      - zookeeper
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storm.yaml:/opt/apache-storm-2.8.3/conf/storm.yaml     

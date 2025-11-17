@@ -1,0 +1,6 @@
+# Ignore all hidden files (dotfiles)
+.*
+# But keep Git and version-control metadata
+!.gitignore
+!.gitattributes
+!.gitkeep

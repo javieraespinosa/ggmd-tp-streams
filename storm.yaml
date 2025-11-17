@@ -1,0 +1,6 @@
+# Zookeeper
+storm.zookeeper.servers:
+  - "zookeeper"
+
+# Nimbus host(s)
+nimbus.seeds: ["nimbus"]
