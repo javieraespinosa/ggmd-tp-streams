@@ -12,75 +12,73 @@ docker build -t jaeo/ggmd:tp-stream .
 ```
 
 
-### Local Cluster Test
+### Option A: Run Topology in Local Cluster
 
-#### Terminal 1
+#### Terminal 1: Stream Producer
 
-* Create container: 
-
-```sh
-docker run --rm -it \
-   --name stormracer  \
-   -v "${PWD}"/StormRacer:/storm/examples/StormRacer \
-   -v "${PWD}"/StreamRunners4docker:/StreamRunners   \
-   jaeo/ggmd:tp-stream /bin/bash
-```
-
-* Compile StormRacer topology:
+Start a container:
 
 ```sh
-cd /storm/examples/StormRacer/
-mvn package
+docker compose run --rm --name client -it client /bin/bash
 ```
 
-* Run StormRacer topology in local cluster for `120` secs:
-
-```sh
-storm local --local-ttl 120 target/stormTP-1.0.jar stormTP.topology.TopologyT1 9001 9005
-```
-
-
-#### Terminal 2
-
-* Connect to container:
-
-```sh
-docker exec -it stormracer /bin/bash
-```
-
-* Start producer:
+Compile and start the stream producer:
 
 ```sh
 cd /ggmd-storm-stream
+mvn package
+
 ./startStream.sh tortoise 10 150 9001
 ```
 
-Stop containers: **CTRL + D**
 
+#### Terminal 2: Storm Topology
 
-#### Terminal 3
-
-* Connect to container:
+Connect to container: 
 
 ```sh
-docker exec -it stormracer /bin/bash
+docker compose exec -it client /bin/bash
 ```
 
-* Start listener output:
+Compile the storm topology:
 
 ```sh
-cd /ggmd-storm-listner
+cd /storm/examples/ggmd-storm-topology/
+mvn package
+```
+
+Run topology in local cluster mode:
+
+```sh
+# run cluster for 120 secs
+storm local --local-ttl 120 target/stormTP-0.1.jar \
+      stormTP.topology.TopologyT1 9001 9005
+```
+
+#### Terminal 3: Topology consumer (listener)
+
+Connect to container: 
+
+```sh
+docker compose exec -it client /bin/bash
+```
+
+Compile and run the listener:
+
+```sh
+cd /ggmd-storm-listner/
+mvn package
+
 ./startListner.sh 9005
 ```
 
-Stop containers: **CTRL + D**
-
+Close all terminals
 
 --------------
 
-### Storm Cluster Test
+### Option B: Run Topology in a Docker-based Storm Cluster
 
-#### Terminal 1
+#### Terminal 1: Storm Cluster
 
 * Start cluster: 
 
@@ -88,58 +86,70 @@ Stop containers: **CTRL + D**
 docker compose up
 ```
 
-#### Terminal 2
+#### Terminal 2: Stream Producer
 
-* Connect to the storm client:
-
-```sh
-docker compose exec client /bin/bash
-```
-
-* Compile the **storm topology**:
-
-```sh
-cd /storm/examples/StormRacer/
-mvn package
-```
-
-* Submit to cluster:
-
-```sh
-storm local --local-ttl 120 target/stormTP-1.0.jar stormTP.topology.TopologyT1 9001 9005
-```
-
-#### Terminal 3
-
-* Connect to the storm client:
+Connect to the client container:
 
 ```sh
 docker compose exec client /bin/bash
 ```
 
-* Start the **runners**
+Compile and start the stream producer:
 
 ```sh
 cd /ggmd-storm-stream
+mvn package
 ./startStream.sh tortoise 10 150 9001
 ```
 
-#### Terminal 4
+#### Terminal 3: Storm Topology
 
-* Connect to container:
+Connect to the client container: 
 
 ```sh
-docker exec -it stormracer /bin/bash
+docker compose exec -it client /bin/bash
 ```
 
-* Start listener output:
+> [!IMPORTANT]  
+> Modify `src/main/java/stormTP/topology/TopologyT1.java`   
+> Replace `new InputStreamSpout("127.0.0.1", portINPUT);` code with   
+> `new InputStreamSpout("storm-client", portINPUT);`
+
+Compile the storm topology:
 
 ```sh
-cd /ggmd-storm-listner
+cd /storm/examples/ggmd-storm-topology/
+mvn package
+```
+
+Submit topology to cluster:
+
+```sh
+# run cluster for 120 secs
+storm jar target/stormTP-0.1.jar \
+      stormTP.topology.TopologyT1 9001 9005
+```
+Check the Storm UI at http://localhost:8081. 
+
+> Are you using Github Codespaces? Look in the PORTS section to discover the hostname you have to use to connect to the Storm UI.
+
+#### Terminal 4: Topology consumer (listener)
+
+Connect to the client container: 
+
+```sh
+docker compose exec -it client /bin/bash
+```
+
+Compile and run the listener:
+
+> [!IMPORTANT]   
+> Modify file `ggmd-storm-listner/src/main/java/StreamListner.java`.   
+> Replace `"127.0.0.1"` with `storm-client`
+
+```sh
+cd /ggmd-storm-listner/
+mvn package
+
 ./startListner.sh 9005
 ```
-
-Stop containers: **CTRL + D**
-> The Storm UI is available at http://localhost:8080 when working locally.
-> 
-> See the forward ports sections if you are using Github codespaces

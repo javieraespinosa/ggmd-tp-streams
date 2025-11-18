@@ -4,3 +4,6 @@ storm.zookeeper.servers:
 
 # Nimbus host(s)
 nimbus.seeds: ["nimbus"]
+
+# Nimbus port
+ui.port: 8081

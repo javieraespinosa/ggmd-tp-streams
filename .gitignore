@@ -4,3 +4,7 @@
 !.gitignore
 !.gitattributes
 !.gitkeep
+
+ggmd-storm-topology/target
+ggmd-storm-listner/target
+ggmd-storm-stream/target
