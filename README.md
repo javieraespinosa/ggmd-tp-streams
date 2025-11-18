@@ -1,7 +1,11 @@
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=1097878214&machine=standardLinuxXL)
 
- ### Build image
+ ### TP image
+
+> [!IMPORTANT]
+> Do not build the image if working with Github Codespaces. Just pull it from docker hub:   
+> `docker pull jaeo/ggmd:tp-stream`
 
 ```sh
 # Apple Silicon version
