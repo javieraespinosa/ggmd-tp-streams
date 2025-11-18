@@ -36,7 +36,7 @@ mvn package
 * Run StormRacer topology in local cluster for `120` secs:
 
 ```sh
-storm local --local-ttl 120 target/storm-ggmd-2.8.3.jar stormTP.topology.TopologyT1 1 1
+storm local --local-ttl 120 target/stormTP-1.0.jar stormTP.topology.TopologyT1 9001 9005
 ```
 
 
@@ -51,11 +51,30 @@ docker exec -it stormracer /bin/bash
 * Start producer:
 
 ```sh
-cd /StreamRunners
-./startStream.sh tortoise 1 9001
+cd /ggmd-storm-stream
+./startStream.sh tortoise 10 150 9001
 ```
 
 Stop containers: **CTRL + D**
+
+
+#### Terminal 3
+
+* Connect to container:
+
+```sh
+docker exec -it stormracer /bin/bash
+```
+
+* Start listener output:
+
+```sh
+cd /ggmd-storm-listner
+./startListner.sh 9005
+```
+
+Stop containers: **CTRL + D**
+
 
 --------------
 
@@ -87,7 +106,7 @@ mvn package
 * Submit to cluster:
 
 ```sh
-storm jar target/storm-ggmd-2.8.3.jar stormTP.topology.TopologyT1 1 1
+storm local --local-ttl 120 target/stormTP-1.0.jar stormTP.topology.TopologyT1 9001 9005
 ```
 
 #### Terminal 3
@@ -101,10 +120,26 @@ docker compose exec client /bin/bash
 * Start the **runners**
 
 ```sh
-cd /StreamRunners
-./startStream.sh tortoise 10 9001
+cd /ggmd-storm-stream
+./startStream.sh tortoise 10 150 9001
 ```
 
+#### Terminal 4
+
+* Connect to container:
+
+```sh
+docker exec -it stormracer /bin/bash
+```
+
+* Start listener output:
+
+```sh
+cd /ggmd-storm-listner
+./startListner.sh 9005
+```
+
+Stop containers: **CTRL + D**
 > The Storm UI is available at http://localhost:8080 when working locally.
 > 
 > See the forward ports sections if you are using Github codespaces
