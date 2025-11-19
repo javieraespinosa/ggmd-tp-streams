@@ -117,7 +117,7 @@ docker compose exec -it client /bin/bash
 > [!IMPORTANT]  
 > Modify `src/main/java/stormTP/topology/TopologyT1.java`   
 > Replace `new InputStreamSpout("127.0.0.1", portINPUT);` code with   
-> `new InputStreamSpout("storm-client", portINPUT);`
+> `new InputStreamSpout("client", portINPUT);`
 
 Compile the storm topology:
 
@@ -149,7 +149,7 @@ Compile and run the listener:
 
 > [!IMPORTANT]   
 > Modify file `ggmd-storm-listner/src/main/java/StreamListner.java`.   
-> Replace `"127.0.0.1"` with `storm-client`
+> Replace `"127.0.0.1"` with `supervisor`
 
 ```sh
 cd /ggmd-storm-listner/
